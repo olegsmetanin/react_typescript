@@ -11,6 +11,7 @@ interface IContextProps {
   render     : Function;
   httpClient : IHTTPClient;
   eventBus   : IEventBus;
+  state      : any;
 }
 
 export default class Context extends React.Component<IContextProps, {}> {
@@ -20,6 +21,7 @@ export default class Context extends React.Component<IContextProps, {}> {
     invoke     : React.PropTypes.func.isRequired,
     httpClient : React.PropTypes.object.isRequired,
     eventBus   : React.PropTypes.object.isRequired,
+    state      : React.PropTypes.object.isRequired,
   }
 
   getChildContext () {
@@ -28,6 +30,7 @@ export default class Context extends React.Component<IContextProps, {}> {
       invoke     : this.props.invoke,
       httpClient : this.props.httpClient,
       eventBus   : this.props.eventBus,
+      state      : this.props.state,
     };
   }
 

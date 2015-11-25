@@ -18,3 +18,10 @@ export interface IUserState {
 export interface IAuthState {
   auth   : IUserState;
 }
+
+export default {
+  me: undefined,
+  ui: {
+    loading: false,
+  }
+}

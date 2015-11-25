@@ -32,6 +32,7 @@ window['app'] = (options: any) => {
   const createBrowserHistory = require('history/lib/createBrowserHistory');
   const useScroll = require('scroll-behavior/lib/useStandardScroll');
   const history = useScroll(createBrowserHistory)();
+  //TODO delete invoke
   ReactDOM.render(
     <Context
       invoke={invoke}

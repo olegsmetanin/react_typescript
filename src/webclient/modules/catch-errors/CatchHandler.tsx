@@ -1,11 +1,13 @@
 import * as React from 'react';
 import IHTTPClient from '../../framework/common/http/IHTTPClient';
 import {IState} from './models';
-import {callThrowEndpoint, callSecuredEndpoint} from './actions';
+import Api from './api';
+import Actions from './actions';
 
 interface ICatchHandlerContext {
   httpClient : IHTTPClient;
-  state: IState;
+  state      : IState;
+  setState   : (state: any) => void;
 }
 
 export default class CatchHandler extends React.Component<React.Props<CatchHandler>, {}> {
@@ -13,38 +15,20 @@ export default class CatchHandler extends React.Component<React.Props<CatchHandl
   static contextTypes: React.ValidationMap<any> = {
     httpClient: React.PropTypes.object.isRequired,
     state     : React.PropTypes.object.isRequired,
+    setState  : React.PropTypes.func.isRequired,
   }
 
   context: ICatchHandlerContext;
+  actions: Actions;
 
   constructor(props, context) {
     super(props);
 
-    this.state = context.state;
-  }
-
-  callThrowApi = async () => {
-    const {httpClient, state} = this.context;
-
-    try {
-      await callThrowEndpoint({httpClient, state});
-    } finally {
-      this.setState(state);
-      //This works too
-      //this.forceUpdate();
-    }
-  }
-
-  callAuthorizedApi = async () => {
-    const {httpClient, state} = this.context;
-
-    try {
-      await callSecuredEndpoint({httpClient, state});
-    } finally {
-      this.setState(state);
-      //This works too
-      //this.forceUpdate();
-    }
+    const {httpClient, state, setState} = context;
+    const moduleState = state.modules['catch-errors'];
+    this.state = moduleState;
+    const api = new Api({httpClient});
+    this.actions = new Actions({api, state: moduleState, setState});
   }
 
   render() {
@@ -52,10 +36,10 @@ export default class CatchHandler extends React.Component<React.Props<CatchHandl
     return (
       <div>
         <div>Press btn to call throw api</div>
-        <button onClick={this.callThrowApi}>Call throw api</button>
+        <button onClick={() => this.actions.callThrowEndpoint()}>Call throw api</button>
         <br/>
         <div>Press btn to call auth api</div>
-        <button onClick={this.callAuthorizedApi}>Call auth api</button>
+        <button onClick={() => this.actions.callSecuredEndpoint()}>Call auth api</button>
         <br/>
         <div style={{display: 'block', backgroundColor: '#eee', color: 'red'}}>
           <pre>{JSON.stringify(this.state, null, 2)}</pre>

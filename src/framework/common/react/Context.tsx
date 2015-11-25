@@ -18,19 +18,21 @@ export default class Context extends React.Component<IContextProps, {}> {
 
   static childContextTypes: React.ValidationMap<any> = {
     cache      : React.PropTypes.object.isRequired,
-    invoke     : React.PropTypes.func.isRequired,
+    invoke     : React.PropTypes.func.isRequired, //TODO to delete
     httpClient : React.PropTypes.object.isRequired,
     eventBus   : React.PropTypes.object.isRequired,
     state      : React.PropTypes.object.isRequired,
+    setState   : React.PropTypes.func.isRequired,
   }
 
   getChildContext () {
     return {
       cache      : this.props.cache,
-      invoke     : this.props.invoke,
+      invoke     : this.props.invoke, //TODO to delete
       httpClient : this.props.httpClient,
       eventBus   : this.props.eventBus,
       state      : this.props.state,
+      setState   : this.setState.bind(this),
     };
   }
 

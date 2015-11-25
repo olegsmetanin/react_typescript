@@ -7,16 +7,19 @@ export interface IUser {
   picurl      : string;
 }
 
+export interface IPopupState {
+  open      : boolean;
+  auth      : boolean;
+  reconnect : boolean;
+  errors?   : any;
+}
+
 export interface IUserState {
   me: IUser;
   ui: {
     loading: boolean;
     error? : Error;
-    popup: {
-      open: boolean;
-      auth: boolean;
-      reconnect: boolean;
-    }
+    popup  : IPopupState;
   }
 }
 
@@ -24,5 +27,10 @@ export default {
   me: undefined,
   ui: {
     loading: false,
+    popup: {
+      open: false,
+      auth: false,
+      reconnect: false,
+    }
   }
 }

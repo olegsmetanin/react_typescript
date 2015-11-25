@@ -6,6 +6,10 @@ export default class AuthApi extends ApiCaller {
     return this._post('/api/me', null);
   }
 
+  login() {
+    return this._post('/api/login', null);
+  }
+
   logout() {
     return this._post('/api/logout', null);
   }

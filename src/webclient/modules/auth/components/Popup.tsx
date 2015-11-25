@@ -1,48 +1,30 @@
 import * as React from 'react';
 var ReactRouter = require('react-router');
 import IEventBus from '../../../../framework/common/event/IEventBus';
-import IHTTPClient from "../../../../framework/common/http/IHTTPClient";
-import IInvoke from '../../../../framework/common/invoke/IInvoke';
 import AuthRequiredEvent from '../../../../framework/client/events/AuthRequired';
 import ConnectionBrokenEvent from '../../../../framework/client/events/ConnectionBroken';
-import BufferDropEvent from "../../../../framework/client/events/BufferDrop";
-import BufferRetryEvent from "../../../../framework/client/events/BufferRetry";
-import Login from "../../../commands/Login";
-
-interface IPopupState {
-  open      : boolean;
-  auth      : boolean;
-  reconnect : boolean;
-  errors?   : any;
-}
+import {IPopupState} from '../models';
 
 interface IPopupContext {
-  history    : any;
-  httpClient : IHTTPClient;
-  eventBus   : IEventBus;
-  invoke     : IInvoke;
+  history  : any;
+  eventBus : IEventBus;
 }
 
-export default class Popup extends React.Component<{}, IPopupState> {
+interface IPopupProps extends React.Props<Popup> {
+  login      : () => void;
+  openPopup  : (auth: boolean) => void;
+  closePopup : (cancel: boolean) => void;
+  state      : IPopupState;
+}
+
+export default class Popup extends React.Component<IPopupProps, {}> {
 
   static contextTypes: React.ValidationMap<any> = {
     history    : React.PropTypes.object.isRequired,
-    httpClient : React.PropTypes.object.isRequired,
     eventBus   : React.PropTypes.object.isRequired,
-    invoke     : React.PropTypes.func.isRequired,
   }
 
   context: IPopupContext;
-
-  constructor(props, context) {
-    super(props, context);
-
-    this.state = {
-      open: false,
-      auth: false,
-      reconnect: false,
-    };
-  }
 
   componentWillMount() {
     this.context.eventBus.on<AuthRequiredEvent>(AuthRequiredEvent.type, this.onAuthRequired);
@@ -55,53 +37,34 @@ export default class Popup extends React.Component<{}, IPopupState> {
   }
 
   onAuthRequired = () => {
-    const {open} = this.state;
+    const {state: {open}} = this.props;
     if (open) return;
 
-    this.setState({open: true, auth: true, reconnect: false});
+    this.props.openPopup(true);
   }
 
   onConnectionBroken = () => {
-    const {open} = this.state;
+    const {state: {open}} = this.props;
     if (open) return;
 
-    this.setState({open: true, auth: false, reconnect: true});
+    this.props.openPopup(false);
   }
 
   cancel = () => {
-    this.setState({open: false, auth: false, reconnect: false});
-    this.context.eventBus.emit(new BufferDropEvent('User cancel pending requests'));
-    //this.context.router.transitionTo("home"); router 0.13
+    this.props.closePopup(true);
     this.context.history.pushState(null, '/');
   }
 
-  login = async () => {
-    const {httpClient, eventBus, invoke} = this.context;
-    try {
-      await invoke(new Login({httpClient}));
-      this.setState({open: false, auth: false, reconnect: false});
-      eventBus.emit(new BufferRetryEvent());
-    } catch(e) {
-      this.state.errors = e.errors;
-      this.setState(this.state);
-    }
-  }
-
-  retry = () => {
-    this.setState({open: false, auth: false, reconnect: false});
-    this.context.eventBus.emit(new BufferRetryEvent());
-  }
-
   render() {
-    const {open, auth, reconnect, errors} = this.state;
+    const {state:{open, auth, reconnect, errors}} = this.props;
 
     return !open ? null : (
       <div className="popup" style={{width: '40%', height: '200px', position: 'absolute', left: '30%', backgroundColor: '#eee'}}>
         {auth && <div>Login required</div>}
-        {auth && <button type="button" onClick={this.login}>Login</button>}
+        {auth && <button type="button" onClick={() => this.props.login()}>Login</button>}
 
         {reconnect && <div>Offline. Try to reconnect</div>}
-        {reconnect && <button type="button" onClick={this.retry}>Reconnect</button>}
+        {reconnect && <button type="button" onClick={() => this.props.closePopup(false)}>Reconnect</button>}
 
         <button type="button" onClick={this.cancel}>Cancel</button>
         {errors && <div style={{color: 'red'}}>{JSON.stringify(errors)}</div>}

@@ -2,6 +2,7 @@ import * as React from 'react';
 const ReactRouter = require('react-router');
 const { Link } = ReactRouter;
 const DocumentMeta = require('react-document-meta');
+import IEventBus from '../../../framework/common/event/IEventBus';
 import IHTTPClient from '../../../framework/common/http/IHTTPClient';
 import {IUserState} from './../auth/models';
 import Api from './../auth/api';
@@ -16,6 +17,7 @@ interface ILayoutState {
 
 interface ILayoutContext {
   httpClient : IHTTPClient;
+  eventBus   : IEventBus;
   state      : any;
   setState   : () => void;
 }
@@ -25,14 +27,14 @@ export default class Layout extends React.Component<React.Props<Layout>, ILayout
   constructor(props, context) {
     super(props, context);
 
-    const {httpClient, state, setState} = context;
+    const {httpClient, eventBus, state, setState} = context;
     const moduleState = state.modules.auth;
     this.state = {
       clientWidth: 400,
       data: moduleState,
     };
     const api = new Api({httpClient});
-    this.actions = new Actions({api, state: moduleState, setState});
+    this.actions = new Actions({api, eventBus, state: moduleState, setState});
   }
 
   context: ILayoutContext;
@@ -41,6 +43,7 @@ export default class Layout extends React.Component<React.Props<Layout>, ILayout
 
   static contextTypes: React.ValidationMap<any> = {
     httpClient : React.PropTypes.object.isRequired,
+    eventBus   : React.PropTypes.object.isRequired,
     state      : React.PropTypes.object.isRequired,
     setState   : React.PropTypes.func.isRequired,
   };
@@ -87,7 +90,12 @@ export default class Layout extends React.Component<React.Props<Layout>, ILayout
     return (
 
       <div className={xstyle}>
-        <Popup />
+        <Popup
+          state={data && data.ui.popup}
+          login={() => this.actions.login()}
+          openPopup={(auth: boolean) => this.actions.openPopup(auth)}
+          closePopup={(cancel: boolean) => this.actions.closePopup(cancel)}
+        />
         <DocumentMeta title={'React-blog'} />
         <Menu
           auth={data}

@@ -4,37 +4,16 @@ import * as React from 'react';
 const ReactRouter = require('react-router');
 const { Link } = ReactRouter;
 import OAuthPopup from './../../auth/components/OAuthPopup';
-import {bindActionCreators, Store, Dispatch} from 'redux';
-import {connect} from 'react-redux';
-import {IUser, IUserState} from './../../auth/model';
-import * as MeActions from './../../auth/actions';
-import IHTTPClient from "../../../../framework/common/http/IHTTPClient";
-//import UserMenuItem from './components/UserMenuItem';
-
-interface IUserMenuItemContext {
-}
+import {IUser, IUserState} from './../../auth/models';
 
 interface IUserMenuItemProps {
   auth: IUserState;
   onLogout: () => void;
 }
 
-interface IUserMenuItemState {
-}
-
-export default class UserMenuItem extends React.Component<IUserMenuItemProps, IUserMenuItemState> {
-
-  context: IUserMenuItemContext;
-
-  constructor(props, context) {
-    super(props, context);
-  }
-
-  state: IUserMenuItemState = {
-  }
+export default class UserMenuItem extends React.Component<IUserMenuItemProps, {}> {
 
   render() {
-
     let {auth:{me, ui}} = this.props;
 
     return (
@@ -54,7 +33,7 @@ export default class UserMenuItem extends React.Component<IUserMenuItemProps, IU
                   Login with facebook
                 </OAuthPopup>
               </div>
-            : <div>Loading user</div>
+            : <div>Loading user...</div>
         }
       </div>
     )

@@ -8,15 +8,16 @@ export interface IUser {
 }
 
 export interface IUserState {
-  me   : IUser;
+  me: IUser;
   ui: {
     loading: boolean;
     error? : Error;
+    popup: {
+      open: boolean;
+      auth: boolean;
+      reconnect: boolean;
+    }
   }
-}
-
-export interface IAuthState {
-  auth   : IUserState;
 }
 
 export default {

@@ -3,38 +3,18 @@
 import * as React from 'react';
 const ReactRouter = require('react-router');
 const { Link } = ReactRouter;
+import {IUser, IUserState} from './../auth/models';
 import OAuthPopup from './../auth/components/OAuthPopup';
-import {bindActionCreators, Store, Dispatch} from 'redux';
-import {connect} from 'react-redux';
-import {IUser, IUserState} from './../auth/model';
-import * as MeActions from './../auth/actions';
-import IHTTPClient from "../../../framework/common/http/IHTTPClient";
 import UserMenuItem from './components/UserMenuItem';
-
-interface IMenuContext {
-}
 
 interface IMenuProps {
   auth: IUserState;
   onLogout: () => void;
 }
 
-interface IMenuState {
-}
-
-export default class Menu extends React.Component<IMenuProps, IMenuState> {
-
-  context: IMenuContext;
-
-  constructor(props, context) {
-    super(props, context);
-  }
-
-  state: IMenuState = {
-  }
+export default class Menu extends React.Component<IMenuProps, {}> {
 
   render() {
-
     let {auth} = this.props;
 
     return (

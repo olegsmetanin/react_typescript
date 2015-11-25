@@ -1,60 +1,49 @@
-/// <reference path="../../webclient.d.ts"/>
-
-import {Action, createAction} from 'redux-actions';
-import {Dispatch} from 'redux';
 import IHTTPClient from '../../../framework/common/http/IHTTPClient';
-import {IUser, IAuthState} from './model';
-import * as ActionTypes from './actionTypes';
-import AuthApi from './api';
+import {IUserState} from './models';
+import Api from './api';
 
-const meRequestBegin = createAction(ActionTypes.ME_REQUEST);
-
-const meRequestSuccess = createAction<any>(
-  ActionTypes.ME_REQUEST_SUCCESS,
-  (data) => data
-);
-
-const meRequestFailure = (e: Error) => {
-  const action = createAction(ActionTypes.ME_REQUEST_FAILURE, (e:Error) => e)(e);
-  action.error = true;
-  return action;
+interface IActionOptions {
+  api      : Api;
+  state    : IUserState;
+  setState : (state: any) => void;
 }
 
-const requestMe = (httpClient: IHTTPClient) => (dispatch: Dispatch) => {
-  console.log(`${new Date().toISOString()} me request begin`)
-  dispatch(meRequestBegin());
-  const api = new AuthApi({httpClient});
-  return api.me().then(
-    result => dispatch(meRequestSuccess(result)),
-    error => dispatch(meRequestFailure(error))
-  ).then(() => console.log(`${new Date().toISOString()} me request finished`));
-}
+export default class Actions {
 
+  private options: IActionOptions;
 
-const logoutRequestBegin = createAction(ActionTypes.LOGOUT_REQUEST);
+  constructor(options: IActionOptions) {
+    this.options = options;
+  }
 
-const logoutRequestSuccess = createAction<any>(
-  ActionTypes.LOGOUT_REQUEST_SUCCESS,
-  (data) => data
-);
+  async me() {
+    const {api, state, setState} = this.options;
 
-const logoutRequestFailure = (e: Error) => {
-  const action = createAction(ActionTypes.LOGOUT_REQUEST_FAILURE, (e:Error) => e)(e);
-  action.error = true;
-  return action;
-}
+    state.ui.loading = true;
+    setState(state);
+    try {
+      state.me = await api.me();
+    } catch(e) {
+      state.ui.error = e.errors;
+    } finally {
+      state.ui.loading = false;
+      setState(state);
+    }
+  }
 
-const requestLogout = (httpClient: IHTTPClient) => (dispatch: Dispatch) => {
-  console.log(`${new Date().toISOString()} logout request begin`)
-  dispatch(logoutRequestBegin());
-  const api = new AuthApi({httpClient});
-  return api.logout().then(
-    result => dispatch(logoutRequestSuccess(result)),
-    error => dispatch(logoutRequestFailure(error))
-  ).then(() => console.log(`${new Date().toISOString()} logout request finished`));
-}
+  async logout() {
+    const {api, state, setState} = this.options;
 
-export {
-  requestMe,
-  requestLogout
+    state.ui.loading = true;
+    setState(state);
+    try {
+      await api.logout();
+      state.me = undefined;
+    } catch(e) {
+      state.ui.error = e.errors;
+    } finally {
+      state.ui.loading = false;
+      setState(state);
+    }
+  }
 }

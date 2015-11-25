@@ -2,22 +2,10 @@ import * as React from 'react';
 import { renderToString } from 'react-dom/server';
 var ReactRouter = require('react-router');
 var { match, RoutingContext } = ReactRouter;
-import {
-  Store,
-  compose,
-  createStore,
-  bindActionCreators,
-  applyMiddleware,
-  combineReducers
-} from 'redux';
-import {connect, Provider} from 'react-redux';
-import { Action } from 'redux-actions';
-import thunk from 'redux-thunk';
 
 import invoke from '../../../framework/server/invoke/invoke';
 import Context from '../../../framework/common/react/Context';
 import routes from '../../../webclient/routes/index';
-import {rootReducer as modulesRootReducer} from '../../../webclient/modules/rootReducer';
 import modulesState from '../../../webclient/modules/state';
 import HTTPClient from '../../../framework/server/http/HTTPClient';
 import Cache from '../../../framework/common/cache/Cache';
@@ -32,15 +20,6 @@ export default async function reactServerRender(url, siteroot: string, req, res)
   const eventBus = new EventBus({});
 
   const initialState: any = {app: {}, modules: modulesState};//TODO typed and dehidrated from server (instead of cache)
-  //const rootReducer = combineReducers({
-  //  app: (state, action: Action) => ({}),//TODO app-wide state
-  //  modules: modulesRootReducer
-  //});
-  //const finalCreateStore = compose(
-  //  applyMiddleware(thunk)
-  //  //TODO redux-react-router???
-  //)(createStore);
-  //const store: Store = finalCreateStore(rootReducer, initialState);
 
   //preload data for rendering
   async function fillCache(routes, methodName, ...args) {

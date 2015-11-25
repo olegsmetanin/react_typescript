@@ -1,7 +1,7 @@
-import catchErrorState from './catch-errors/models';
-import authState from './auth/model';
+import catchErrorsState from './catch-errors/models';
+import authState from './auth/models';
 
 export default {
   auth: authState,
-  ['catch-errors']: catchErrorState,
+  ['catch-errors']: catchErrorsState,
 }

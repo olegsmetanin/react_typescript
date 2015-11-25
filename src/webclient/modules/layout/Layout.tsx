@@ -1,38 +1,48 @@
 import * as React from 'react';
 const ReactRouter = require('react-router');
 const { Link } = ReactRouter;
-import Popup from './../auth/components/Popup';
 const DocumentMeta = require('react-document-meta');
+import IHTTPClient from '../../../framework/common/http/IHTTPClient';
+import {IUser, IUserState} from './../auth/models';
+import Api from './../auth/api';
+import Actions from './../auth/actions';
 import Menu from '../menu/Menu';
-import {IUser, IAuthState} from './../auth/model';
-import * as MeActions from './../auth/actions';
-import IHTTPClient from "../../../framework/common/http/IHTTPClient";
+import Popup from './../auth/components/Popup';
 
 interface ILayoutState {
-  clientWidth: number;
+  clientWidth : number;
+  data        : IUserState;
 }
 
 interface ILayoutContext {
   httpClient : IHTTPClient;
   state      : any;
+  setState   : (state: any) => void;
 }
 
 export default class Layout extends React.Component<React.Props<Layout>, ILayoutState> {
 
   constructor(props, context) {
     super(props, context);
+
+    const {httpClient, state, setState} = context;
+    const moduleState = state.modules.auth;
+    this.state = {
+      clientWidth: 400,
+      data: moduleState,
+    };
+    const api = new Api({httpClient});
+    this.actions = new Actions({api, state: moduleState, setState});
   }
 
   context: ILayoutContext;
+  actions: Actions;
 
   static contextTypes: React.ValidationMap<any> = {
     httpClient : React.PropTypes.object.isRequired,
     state      : React.PropTypes.object.isRequired,
+    setState   : React.PropTypes.func.isRequired,
   };
-
-  state: ILayoutState = {
-    clientWidth: 400
-  }
 
   handleResize(e) {
     // if (document) {
@@ -44,15 +54,15 @@ export default class Layout extends React.Component<React.Props<Layout>, ILayout
     this.handleResize(null);
     window.addEventListener('resize', this.handleResize.bind(this));
     if (!window['loginCallBack']) {
-      //FIXME window['loginCallBack'] = () => this.state.actions.requestMe(this.context.httpClient);
+      window['loginCallBack'] = () => this.actions.me();
     }
   }
 
   componentWillMount() {
     if (typeof window !== 'undefined') {
-      console.log(`${new Date().toISOString()} dispatching action requestMe`);
-      //FIXME this.state.actions.requestMe(this.context.httpClient);
-      console.log(`${new Date().toISOString()} dispatched action requestMe`);
+      //console.log(`${new Date().toISOString()} dispatching action requestMe`);
+      this.actions.me();
+      //console.log(`${new Date().toISOString()} dispatched action requestMe`);
     }
   }
 
@@ -72,15 +82,15 @@ export default class Layout extends React.Component<React.Props<Layout>, ILayout
             ? 'md'
             : 'lg';
 
-    const {state:{modules:{auth}}} = this.context;
+    const {data} = this.state;
     return (
 
       <div className={xstyle}>
         <Popup />
         <DocumentMeta title={'React-blog'} />
         <Menu
-          auth={auth}
-          onLogout={() => {/*FIXME this.state.actions.requestLogout(this.context.httpClient)*/}}
+          auth={data}
+          onLogout={() => this.actions.logout()}
         />
 
         {this.props.children}

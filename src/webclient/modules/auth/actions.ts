@@ -5,7 +5,7 @@ import Api from './api';
 interface IActionOptions {
   api      : Api;
   state    : IUserState;
-  setState : (state: any) => void;
+  setState : () => void;
 }
 
 export default class Actions {
@@ -20,14 +20,14 @@ export default class Actions {
     const {api, state, setState} = this.options;
 
     state.ui.loading = true;
-    setState(state);
+    setState();
     try {
       state.me = await api.me();
     } catch(e) {
       state.ui.error = e.errors;
     } finally {
       state.ui.loading = false;
-      setState(state);
+      setState();
     }
   }
 
@@ -35,7 +35,7 @@ export default class Actions {
     const {api, state, setState} = this.options;
 
     state.ui.loading = true;
-    setState(state);
+    setState();
     try {
       await api.logout();
       state.me = undefined;
@@ -43,7 +43,7 @@ export default class Actions {
       state.ui.error = e.errors;
     } finally {
       state.ui.loading = false;
-      setState(state);
+      setState();
     }
   }
 }

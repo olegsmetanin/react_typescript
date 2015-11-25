@@ -5,7 +5,7 @@ import Api from './api';
 interface IActionOptions {
   api      : Api;
   state    : IState;
-  setState : (state: any) => void;
+  setState : () => void;
 }
 
 export default class Actions {
@@ -28,7 +28,7 @@ export default class Actions {
       console.log('callThrowEndpoint e', e);
       state.errors = e.errors;
     } finally {
-      setState(state);
+      setState();
     }
   }
 
@@ -41,7 +41,7 @@ export default class Actions {
       console.log('callSecuredEndpoint e', e);
       state.errors = e.errors;
     } finally {
-      setState(state);
+      setState();
     }
   }
 

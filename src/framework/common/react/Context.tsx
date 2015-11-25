@@ -32,7 +32,7 @@ export default class Context extends React.Component<IContextProps, {}> {
       httpClient : this.props.httpClient,
       eventBus   : this.props.eventBus,
       state      : this.props.state,
-      setState   : this.setState.bind(this),
+      setState   : this.setState.bind(this, this.props.state),
     };
   }
 

@@ -7,7 +7,7 @@ import Actions from './actions';
 interface ICatchHandlerContext {
   httpClient : IHTTPClient;
   state      : IState;
-  setState   : (state: any) => void;
+  setState   : () => void;
 }
 
 export default class CatchHandler extends React.Component<React.Props<CatchHandler>, {}> {
@@ -40,10 +40,6 @@ export default class CatchHandler extends React.Component<React.Props<CatchHandl
         <br/>
         <div>Press btn to call auth api</div>
         <button onClick={() => this.actions.callSecuredEndpoint()}>Call auth api</button>
-        <br/>
-        <div style={{display: 'block', backgroundColor: '#eee', color: 'red'}}>
-          <pre>{JSON.stringify(this.state, null, 2)}</pre>
-        </div>
       </div>
     )
 

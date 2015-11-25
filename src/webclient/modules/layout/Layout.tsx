@@ -17,7 +17,7 @@ interface ILayoutState {
 interface ILayoutContext {
   httpClient : IHTTPClient;
   state      : any;
-  setState   : (state: any) => void;
+  setState   : () => void;
 }
 
 export default class Layout extends React.Component<React.Props<Layout>, ILayoutState> {
@@ -95,6 +95,10 @@ export default class Layout extends React.Component<React.Props<Layout>, ILayout
         />
 
         {this.props.children}
+
+        <br/>
+        <br/>
+        <pre>{JSON.stringify(this.context.state, null, 2)}</pre>
       </div>
     )
   }

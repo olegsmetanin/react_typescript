@@ -3,7 +3,7 @@
 import * as React from 'react';
 const ReactRouter = require('react-router');
 const { Link } = ReactRouter;
-import {IUser, IUserState} from './../auth/models';
+import {IUserState} from './../auth/models';
 import OAuthPopup from './../auth/components/OAuthPopup';
 import UserMenuItem from './components/UserMenuItem';
 

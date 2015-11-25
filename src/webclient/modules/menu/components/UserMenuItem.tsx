@@ -18,7 +18,7 @@ export default class UserMenuItem extends React.Component<IUserMenuItemProps, {}
 
     return (
       <div>
-        {me
+        {(me && !!me.id)
           ? <div>
               {/*JSON.stringify(me)*/}
               {me.first_name + ' ' + me.last_name}

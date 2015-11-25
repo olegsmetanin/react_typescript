@@ -3,7 +3,7 @@ const ReactRouter = require('react-router');
 const { Link } = ReactRouter;
 const DocumentMeta = require('react-document-meta');
 import IHTTPClient from '../../../framework/common/http/IHTTPClient';
-import {IUser, IUserState} from './../auth/models';
+import {IUserState} from './../auth/models';
 import Api from './../auth/api';
 import Actions from './../auth/actions';
 import Menu from '../menu/Menu';
@@ -37,6 +37,7 @@ export default class Layout extends React.Component<React.Props<Layout>, ILayout
 
   context: ILayoutContext;
   actions: Actions;
+  state: ILayoutState;
 
   static contextTypes: React.ValidationMap<any> = {
     httpClient : React.PropTypes.object.isRequired,

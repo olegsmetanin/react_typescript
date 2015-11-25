@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var autoprefixer = require('autoprefixer');
 
 //https://github.com/keokilee/react-typescript-boilerplate
 
@@ -33,7 +34,7 @@ var config = {
       include: APP_DIR
     }, {
       test: /\.scss$/,
-      loader: ExtractTextPlugin.extract("style", "css", "autoprefixer-loader?browsers=last 2 version", "sass-loader")
+      loader: ExtractTextPlugin.extract("style", "css!postcss!sass")
     }]
   },
   ts: {
@@ -57,6 +58,9 @@ var config = {
   ),
   sassLoader: {
     includePaths: [path.resolve(__dirname, "./src/webclient")]
+  },
+  postcss: function () {
+    return [autoprefixer({ browsers: ['last 2 versions'] })];
   }
 }
 

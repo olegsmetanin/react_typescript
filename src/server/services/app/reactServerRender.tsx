@@ -69,6 +69,7 @@ export default async function reactServerRender(url, siteroot: string, req, res)
           res.status(200).send(HTMLStab({content, head, cachedump, state}));
         } catch(e) {
           console.log('React render error: ', e);
+          console.error(e.stack);
           res.status(500).send(HTMLStab({content:e.toString(), head: 'Error'}))
         }
       }

@@ -5,7 +5,7 @@ import Api from './api';
 interface IActionOptions {
   api      : Api;
   state    : IState;
-  setState : () => void;
+  setState : (state: any) => void;
 }
 
 export default class Actions {
@@ -18,17 +18,16 @@ export default class Actions {
 
   async callThrowEndpoint() {
     const {api, state, setState} = this.options;
-    state.callNumber = state.callNumber || 0;
-    state.callNumber++;
+    let {callNumber = 0} = state;
+    callNumber++;
 
     try {
-      await api.throwed({counter: state.callNumber});
-      state.errors = {general: 'Error not catched!!!'};
+      setState({callNumber});
+      await api.throwed({counter: callNumber});
+      setState({errors: {general: 'Error not catched!!!'}});
     } catch(e) {
       console.log('callThrowEndpoint e', e);
-      state.errors = e.errors;
-    } finally {
-      setState();
+      setState({errors: e.errors});
     }
   }
 
@@ -36,12 +35,11 @@ export default class Actions {
     const {api, state, setState} = this.options;
 
     try {
-      state.data = await api.secured();
+      const data = await api.secured();
+      setState({data});
     } catch(e) {
       console.log('callSecuredEndpoint e', e);
-      state.errors = e.errors;
-    } finally {
-      setState();
+      setState({errors: e.errors});
     }
   }
 

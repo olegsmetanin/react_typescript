@@ -31,9 +31,15 @@ export default class Context extends React.Component<IContextProps, {}> {
       invoke     : this.props.invoke, //TODO to delete
       httpClient : this.props.httpClient,
       eventBus   : this.props.eventBus,
-      state      : this.props.state,
-      setState   : this.setState.bind(this, this.props.state),
+      state      : this.state || this.props.state,
+      setState   : this.setState.bind(this),
     };
+  }
+
+  constructor(props, context) {
+    super(props, context);
+
+    this.state = props.state;
   }
 
   render() {

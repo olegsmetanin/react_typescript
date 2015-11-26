@@ -6,7 +6,7 @@ import Actions from './actions';
 
 interface ICatchHandlerContext {
   httpClient : IHTTPClient;
-  state      : IState;
+  state      : any;
   setState   : () => void;
 }
 
@@ -16,7 +16,7 @@ export default class CatchHandler extends React.Component<React.Props<CatchHandl
     httpClient: React.PropTypes.object.isRequired,
     state     : React.PropTypes.object.isRequired,
     setState  : React.PropTypes.func.isRequired,
-  }
+  };
 
   context: ICatchHandlerContext;
   actions: Actions;
@@ -28,7 +28,18 @@ export default class CatchHandler extends React.Component<React.Props<CatchHandl
     const moduleState = state.modules['catch-errors'];
     this.state = moduleState;
     const api = new Api({httpClient});
-    this.actions = new Actions({api, state: moduleState, setState});
+    this.actions = new Actions({api, state: moduleState, setState: this.createModuleSetState(state, moduleState, setState)});
+  }
+
+  createModuleSetState(state, moduleState, setState) {
+    return (actionState) => {
+      const newModuleState = Object.assign({}, moduleState, actionState);
+      const newModules = Object.assign({}, state.modules, {['catch-errors']: newModuleState});
+      const newGlobalState = Object.assign({}, state, {modules: newModules});
+      //console.log('catch setstate wrapper', actionState, newModuleState, newModules, newGlobalState);
+
+      setState(newGlobalState);
+    }
   }
 
   render() {

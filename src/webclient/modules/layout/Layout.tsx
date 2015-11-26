@@ -19,7 +19,7 @@ interface ILayoutContext {
   httpClient : IHTTPClient;
   eventBus   : IEventBus;
   state      : any;
-  setState   : () => void;
+  setState   : (state: any) => void;
 }
 
 export default class Layout extends React.Component<React.Props<Layout>, ILayoutState> {
@@ -34,7 +34,17 @@ export default class Layout extends React.Component<React.Props<Layout>, ILayout
       data: moduleState,
     };
     const api = new Api({httpClient});
-    this.actions = new Actions({api, eventBus, state: moduleState, setState});
+    this.actions = new Actions({api, eventBus, state: moduleState, setState: this.createModuleSetState(state, moduleState, setState)});
+  }
+
+  createModuleSetState(state, moduleState, setState) {
+    return (actionState) => {
+      const newModuleState = Object.assign({}, moduleState, actionState);
+      const newModules = Object.assign({}, state.modules, {auth: newModuleState});
+      const newGlobalState = Object.assign({}, state, {modules: newModules});
+
+      setState(newGlobalState);
+    }
   }
 
   context: ILayoutContext;
